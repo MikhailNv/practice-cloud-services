@@ -1,0 +1,12 @@
+FROM python:3.9.6-alpine3.14
+
+WORKDIR /app
+
+RUN addgroup --system app && adduser --system tuser app
+
+USER tuser
+
+COPY info_about_system.py .
+
+ENTRYPOINT ["python3"]
+CMD ["info_about_system.py"]
