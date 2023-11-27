@@ -3,7 +3,8 @@ name: Docker Build
 on:
   push:
     branches:
-      - master ## ветка(и), для которой ниже создается job при push'
+      - master ## ветка(и), для которой ниже создается job при push'e
+
 
 jobs:
   build:
