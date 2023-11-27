@@ -27,6 +27,6 @@ jobs:
       - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
         uses: docker/build-push-action@v5
         with:
-          context: "./API/" ##Путь к папке с проектом для сборки
+          context: "./api/" ##Путь к папке с проектом для сборки
           push: true
           tags: ungadult/api:latest
