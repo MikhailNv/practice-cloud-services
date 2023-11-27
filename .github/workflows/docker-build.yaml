@@ -5,7 +5,7 @@ on:
     branches:
       - lab-3 ## ветка(и), для которой ниже создается job при push'e
     paths:
-      - "API/**"
+      - "api/**"
 
 
 
