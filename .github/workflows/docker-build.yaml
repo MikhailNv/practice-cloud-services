@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - lab-3 ## ветка(и), для которой ниже создается job при push'e
+    paths:
+      - "API/**"
 
 
 jobs:
@@ -23,6 +25,6 @@ jobs:
       - name: Docker loggin in ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
         uses: docker/build-push-action@v5
         with:
-          context: "./API" ##Путь к папке с проектом для сборки
+          context: "./API/" ##Путь к папке с проектом для сборки
           push: true
           tags: MikhailNv/test:latest
