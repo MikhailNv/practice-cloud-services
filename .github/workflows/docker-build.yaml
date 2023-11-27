@@ -23,6 +23,6 @@ jobs:
       - name: Docker loggin in ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
         uses: docker/build-push-action@v5
         with:
-          context: "./" ##Путь к папке с проектом для сборки
+          context: "./API" ##Путь к папке с проектом для сборки
           push: true
-          tags: philippkorkunov/test:latest
+          tags: MikhailNv/test:latest
