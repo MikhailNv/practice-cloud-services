@@ -29,4 +29,4 @@ jobs:
         with:
           context: "./API/" ##Путь к папке с проектом для сборки
           push: true
-          tags: mikhailnv/test:latest
+          tags: ungadult/api:latest
