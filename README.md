@@ -121,7 +121,7 @@
 ![png4](./images/4.png)
 
 Далее смоделируем ситуацию рельной разработки: теперь нам стало необходимо, что возвращался в запросе лишь 1 прогноз погоды.
-Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения:
+Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения и сделаем push в репозиторий:
   ```
 [ApiController]
 [Route("[controller]")]
