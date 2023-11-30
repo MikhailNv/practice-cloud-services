@@ -92,6 +92,7 @@
   password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
   ```
 
+Секркты репозитория Setting/Secrets and variables/Actions:
 ![png1](./images/1.png)
 
 Теперь запустим заново workflow. Получаем
