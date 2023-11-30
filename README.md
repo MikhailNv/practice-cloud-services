@@ -93,9 +93,12 @@
   ```
 
 ![png1](./images/1.png)
+
 Теперь запустим заново workflow. Получаем
 
 ![png2](./images/2.png)
+
+
 
 Тест сборки
 
@@ -113,12 +116,12 @@
  docker run -p 8080:80 philippkorkunov/test
  ```
 ![png3](./images/3.png)
+
 Делаем запрос. http://localhost:8080/WeatherForecast. Как видно, нам пришел ответ (в виде json) с массивом прогнозов погоды, то есть проект собрался и развернулся в докере.
 ![png4](./images/4.png)
 
-
 Далее смоделируем ситуацию рельной разработки: теперь нам стало необходимо, что возвращался в запросе лишь 1 прогноз погоды.
-Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения:
+Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения и сделаем push в репозиторий:
   ```
 [ApiController]
 [Route("[controller]")]
@@ -150,8 +153,10 @@ public class WeatherForecastController : ControllerBase
   ```
 После этого у нас запустился новый workflow:
 ![png5](./images/5.png)
+
 По заваршении новый образ загрузился к нам в репозиторий на dockerhub. Запустим новую версию API:
 ![png6](./images/6.png)
+
 Повторим запрос. Как мы видим, теперь запрос возвращает не массив прогнозов погод, а лишь 1 прогноз погоды. Это говорит о том, что мы загрузили с dockerhub, обновленный образ, в котором загружена новая версия API, что и требовалось
 ![png7](./images/7.png)
 
