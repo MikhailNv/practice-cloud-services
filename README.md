@@ -10,7 +10,7 @@
 
  Создание репозитория с проектом
 
- В качестве рабочего проекта был загружен дефолтный проект Web-API на ASP.net Core, в котором реализован контроллер WeatherForecast, в котором реализован метод Get() (get-запрос к серверу). Сейчас он возвращает массив ранломных прогнозов (от 1 до 5):
+ В качестве рабочего проекта был загружен дефолтный проект Web-API на ASP.net Core, в котором реализован контроллер WeatherForecast (путь к файлу: ./API/Controllers/WeatherForecastController.cs), в котором реализован метод Get() (get-запрос к серверу). Сейчас он возвращает массив ранломных прогнозов (от 1 до 5):
  ```
    [ApiController]
    [Route("[controller]")]
@@ -52,12 +52,18 @@
  on:
    push:
      branches:
-       - master ## ветка(и), для которой ниже создается job при push'e
+       - lab-3 ## ветка(и), для которой ниже создается job при push'e
+     paths:
+       - "API/**" ## папка, для которой отслеживаются пуши
  
- 
+       
  jobs:
    build:
      runs-on: ubuntu-latest ## используется ubuntu, так как там предустановлен docker
+ 
+     defaults:
+       run:
+         working-directory: "/API" ## базовая директория
  
      steps:
        - name: Checkout Repository ## доступ к репозиторию
@@ -69,13 +75,12 @@
            username: ${{ secrets.DOCKER_USERNAME }} ##логин от аккаунта 
            password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
      
-       - name: Docker loggin in ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
+       - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
          uses: docker/build-push-action@v5
          with:
-           context: "./" ##Путь к папке с проектом для сборки
+           context: "./API/" ##Путь к папке с проектом для сборки
            push: true
-           tags: philippkorkunov/test:latest
-
+           tags: ungadult/api:latest
   ```
 
  Настроить секреты
@@ -101,26 +106,57 @@
   ```
 Запускаем его на 8080 порту командой, который слушает 80 порт запущенного в докере API
  ```
+ docker run -p 8080:80 <имя_пользователя_на_dockerhub_из_secrets>/<название_образа>
+ ```
+В нашем случае тестировали на dockerhub philippkorkunov
+ ```
  docker run -p 8080:80 philippkorkunov/test
  ```
-Делаем запрос. http://localhost:8080/WeatherForecast. Как видно, нам пришел ответ (в виде json) с массивом прогнозов погоды, то есть проект собрался и развернулся в докере.
 ![png3](./images/3.png)
-
-Теперь введем следующую команду
-
-  ```
-minikube service example-app-service
-  ```
-Она покажет нам внешний IP по которому доступен наш сервис
-
+Делаем запрос. http://localhost:8080/WeatherForecast. Как видно, нам пришел ответ (в виде json) с массивом прогнозов погоды, то есть проект собрался и развернулся в докере.
 ![png4](./images/4.png)
 
-А также мгновенно откроет браузер с нашим сервисом
 
+Далее смоделируем ситуацию рельной разработки: теперь нам стало необходимо, что возвращался в запросе лишь 1 прогноз погоды.
+Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения:
+  ```
+[ApiController]
+[Route("[controller]")]
+public class WeatherForecastController : ControllerBase
+{
+    private static readonly string[] Summaries = new[]
+    {
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    private readonly ILogger<WeatherForecastController> _logger;
+
+    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    {
+        _logger = logger;
+    }
+
+    [HttpGet(Name = "GetWeatherForecast")]
+    public WeatherForecast Get(int index)
+    {
+        return new WeatherForecast
+        {
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        };
+    }
+}
+  ```
+После этого у нас запустился новый workflow:
 ![png5](./images/5.png)
+По заваршении новый образ загрузился к нам в репозиторий на dockerhub. Запустим новую версию API:
+![png6](./images/6.png)
+Повторим запрос. Как мы видим, теперь запрос возвращает не массив прогнозов погод, а лишь 1 прогноз погоды. Это говорит о том, что мы загрузили с dockerhub, обновленный образ, в котором загружена новая версия API, что и требовалось
+![png7](./images/7.png)
+
 
 ## Вывод
-В данной лабораторной работе нами были созданы 2 YAML файла для создания локального kubernetes кластера, а также развернут сервис одной командой запуска. Во время выполнения лабораторной работы проблем не возникло.
-
+В ходе выполнения лабораторной работы был настроен CI/CD: после пуша в папку API рабочего репозитория создавается новый docker-образ и сохраняется на dockerhub. Во время выполнения работы проблем не возникло.
 ## Выполнили
 Студенты группы К34211: Наумов М., Захаров Е. и Коркунов. Ф
