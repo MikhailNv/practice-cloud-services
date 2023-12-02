@@ -82,19 +82,6 @@
            push: true
            tags: ungadult/api:latest
   ```
-
- Настроить секреты
-
- В этих строчках мы ссылаемся на секреты DOCKER_USERNAME и DOCKER_PASSWORD, которые мы создали в настроках репозитория
-
- ```
-  username: ${{ secrets.DOCKER_USERNAME }} ##логин от аккаунта 
-  password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
-  ```
-
-Секркты репозитория Setting/Secrets and variables/Actions:
-![png1](./images/1.png)
-
 Теперь запустим заново workflow. Получаем
 
 ![png2](./images/2.png)
