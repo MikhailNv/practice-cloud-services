@@ -82,7 +82,7 @@
            push: true
            tags: ungadult/api:latest
   ```
-Теперь запустим заново workflow. Получаем
+При запуске workflow сборка проходит успешно.
 
 ![png2](./images/2.png)
 
