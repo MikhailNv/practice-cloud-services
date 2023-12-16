@@ -1,0 +1,19 @@
+FROM python:3.9-slim
+
+MAINTAINER MikhailNv
+
+LABEL version='1.0'
+
+WORKDIR /home
+
+COPY requirements.txt .
+RUN apt-get update && \
+    apt-get install -y python3 && \
+    useradd -m mikhailnv -p mikhailnv && \
+    pip install -r requirements.txt
+
+USER mikhailnv
+
+COPY ./app/app.py ./app/settings.py .
+
+ENTRYPOINT ["python3", "app.py"]

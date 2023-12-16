@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Docker-app
+    environment:
+      POSTGRES_DB: site_db
+      POSTGRES_USER: mnaumov
+      POSTGRES_PASSWORD: mnaumov
+      POSTGRES_HOST: site_db
+      POSTGRES_PORT: 5432
+    depends_on:
+      - site_db
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mnaumov@boom.com
+      PGADMIN_DEFAULT_PASSWORD: mnaumov
+    ports:
+      - '5050:80'
+
+  site_db:
+    container_name: site_db
+    build:
+      context: .
+      dockerfile: Docker-db
+    user: root
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=mnaumov
+      - POSTGRES_PASSWORD=mnaumov
+      - POSTGRES_DB=site_db
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
