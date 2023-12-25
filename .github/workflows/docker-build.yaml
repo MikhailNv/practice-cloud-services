@@ -30,12 +30,12 @@ jobs:
          secrets: |
           secret/data/docker * | dockerhub_
 
-    - name: docker-hub-login
-      uses: docker/login-action@v3
-      with:
-        username: ${{ env.dockerhub_username }}
-        password: ${{ env.dockerhub_password }}
-   
+     - name: docker-hub-login
+       uses: docker/login-action@v3
+       with:
+         username: ${{ env.dockerhub_username }}
+         password: ${{ env.dockerhub_password }}
+    
      - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
        uses: docker/build-push-action@v5
        with:
