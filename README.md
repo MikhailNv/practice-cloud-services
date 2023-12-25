@@ -36,22 +36,23 @@ minikube service prometheus-server
 ![jpg3](./images/3.jpg)
 
 В конце запустили алерт менеджер с указанным конфигом
-
-![jpg4](./images/4.jpg)
-
+```
+ helm install prometheus-alertmanager prometheus-community/alertmanager -f .\charts\alertmanager\values.yml
+```
 
 Зайдем на  http://localhost:9091 :
 
-![jpg5](./images/5.jpg)
+![jpg4](./images/4.jpg)
 
 Уведомление будет приходить в случае, когда используемая память привышает 1 байт
 
 Это видно и в алерт менеджере
 
-![jpg6](./images/6.jpg)
-
+![jpg5](./images/5.jpg)
 
 В телеграмм-канал тоже пришло сообщение
+
+![jpg6](./images/6.jpg)
 
 ![jpg7](./images/7.jpg)
 
