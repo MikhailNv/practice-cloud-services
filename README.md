@@ -55,6 +55,7 @@
 Затем был запушен и добалены секреты и токен для аутентификации
 
 ```bin/vault kv put -mount=secret docker username=ungadult```
+
 ```bin/vault token create -period=30m ```
 
 
@@ -92,13 +93,13 @@
            tlsSkipVerify: true
            token: ${{ secrets.VAULT_TOKEN }} #в секрктах гитхаба находится токен, который получили после создания токена
            secrets: |
-            secret/data//docker * | dockerhub_
+            secret/data//docker * | DOCKERHUB_
 
       - name: docker-hub-login
         uses: docker/login-action@v3
         with:
-          username: ${{ env.dockerhub_username }}
-          password: ${{ env.dockerhub_password }}
+          username: ${{ env.DOCKERHUB_username }}
+          password: ${{ env.DOCKERHUB_password }}
      
        - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
          uses: docker/build-push-action@v5
@@ -109,54 +110,7 @@
   ```
 
 ### Тест сборки
-Получаем собранный образ
-  ```
- docker pull philippkorkunov/test
-  ```
-Запускаем его на 8080 порту командой, который слушает 80 порт запущенного в докере API
- ```
- docker run -p 8080:80 <имя_пользователя_на_dockerhub_из_secrets>/<название_образа>
- ```
-В нашем случае тестировали на dockerhub philippkorkunov
- ```
- docker run -p 8080:80 philippkorkunov/test
- ```
-![png3](./images/3.png)
-
-Делаем запрос. http://localhost:8080/WeatherForecast. Как видно, нам пришел ответ (в виде json) с массивом прогнозов погоды, то есть проект собрался и развернулся в докере.
-![png4](./images/4.png)
-
-Далее смоделируем ситуацию рельной разработки: теперь нам стало необходимо, что возвращался в запросе лишь 1 прогноз погоды.
-Внесем изменения в файл ./API/Controllers/WeatherForecastController.cs изменения и сделаем push в репозиторий:
-  ```
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
-{
-    private static readonly string[] Summaries = new[]
-    {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
-    {
-        _logger = logger;
-    }
-
-    [HttpGet(Name = "GetWeatherForecast")]
-    public WeatherForecast Get(int index)
-    {
-        return new WeatherForecast
-        {
-            Date = DateTime.Now.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        };
-    }
-}
-  ```
+Обновим проект, удалив несколько элементов из массива
 После этого у нас запустился новый workflow:
 ![png5](./images/5.png)
 
