@@ -1,36 +1,44 @@
 name: Docker Build
 
 on:
-  push:
-    branches:
-      - lab-3 ## ветка(и), для которой ниже создается job при push'e
-    paths:
-      - "API/**"
+ push:
+   branches:
+     - lab-3 ## ветка(и), для которой ниже создается job при push'e
+   paths:
+     - "API/**" ## папка, для которой отслеживаются пуши
 
-
-
-      
+     
 jobs:
-  build:
-    runs-on: ubuntu-latest ## используется ubuntu, так как там предустановлен docker
+ build:
+   runs-on: self-hosted ## указываем, что сборку запускам на нашей машине, которую подклюичли к гиту
 
-    defaults:
-      run:
-        working-directory: "/API"
+   defaults:
+     run:
+       working-directory: "/API" ## базовая директория
 
-    steps:
-      - name: Checkout Repository ## доступ к репозиторию
-        uses: actions/checkout@v2
+   steps:
+     - name: Checkout Repository ## доступ к репозиторию
+       uses: actions/checkout@v2
 
-      - name: Docker loggin in ##вход в учетную запись dockerhub, куда будет зугружен собранный образ
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }} ##логин от аккаунта 
-          password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
-    
-      - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
-        uses: docker/build-push-action@v5
-        with:
-          context: "./API/" ##Путь к папке с проектом для сборки
-          push: true
-          tags: ungadult/api:latest
+
+     - name: import-secrets
+       uses: hashicorp/vault-action@v2
+       with:
+         url: http://127.0.0.1:8200
+         tlsSkipVerify: true
+         token: ${{ secrets.VAULT_TOKEN }} #в секрктах гитхаба находится токен, который получили после создания токена
+         secrets: |
+          secret/data/docker * | dockerhub_
+
+    - name: docker-hub-login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ env.dockerhub_username }}
+        password: ${{ env.dockerhub_password }}
+   
+     - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
+       uses: docker/build-push-action@v5
+       with:
+         context: "./API/" ##Путь к папке с проектом для сборки
+         push: true
+         tags: ungadult/api:latest
