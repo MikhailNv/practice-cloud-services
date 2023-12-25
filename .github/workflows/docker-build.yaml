@@ -3,7 +3,7 @@ name: Docker Build
 on:
  push:
    branches:
-     - lab-3 ## ветка(и), для которой ниже создается job при push'e
+     - lab-3-star ## ветка(и), для которой ниже создается job при push'e
    paths:
      - "API/**" ## папка, для которой отслеживаются пуши
 
