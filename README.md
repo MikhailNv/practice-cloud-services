@@ -1,9 +1,9 @@
 ## Цель работы:
-Настроить репозиторий так, чтобы после пуша в него автоматически собирался докер образ и результат его сборки сохранялся на dockerhub
+Настроить репозиторий так, чтобы после пуша в него автоматически собирался докер образ на нашей машине при этом секреты должны браться с сервера vault и результат его сборки сохранялся на dockerhub
 
 ## Задачи:
 * Настроить работу CI/CD в текущем репозитории путем добавления в репозиторий файл .github/workflows/docker-build.yaml, который будет собирать новый образ и заливать на dockerhub;
-* Добавить секреты в настройках репозитория;
+* Запустить vault-сервер и добавить туда секреты ;
 * Проверить 2 образа с разными сборками: показать что во 2 случае собрался обновленный проект (после пуша).
 
 ## Ход работы
@@ -43,6 +43,19 @@
        }
    }
   ```
+### Подключение своей машины к гиту
+Для этого были выполнены пару шагов по инструкции. В результате получилось добавить в раннеры свою машину:
+![png1](./images/1.png)
+![png2](./images/2.png)
+
+### Запуск и настройка Vault
+Для этого он сначала был установлен
+![png3](./images/3.png)
+
+Затем был запушен и добалены секреты и токен для аутентификации
+
+```bin/vault kv put -mount=secret docker username=ungadult```
+```bin/vault token create -period=30m ```
 
 
 ### Настройка работы CI/CD в текущем репозитории
@@ -61,7 +74,7 @@
        
  jobs:
    build:
-     runs-on: ubuntu-latest ## используется ubuntu, так как там предустановлен docker
+     runs-on: self-hosted ## указываем, что сборку запускам на нашей машине, которую подклюичли к гиту
  
      defaults:
        run:
@@ -70,12 +83,22 @@
      steps:
        - name: Checkout Repository ## доступ к репозиторию
          uses: actions/checkout@v2
- 
-       - name: Docker loggin in ##вход в учетную запись dockerhub, куда будет зугружен собранный образ
-         uses: docker/login-action@v3
+
+
+       - name: import-secrets
+         uses: hashicorp/vault-action@v2
          with:
-           username: ${{ secrets.DOCKER_USERNAME }} ##логин от аккаунта 
-           password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
+           url: http://127.0.0.1:8200
+           tlsSkipVerify: true
+           token: ${{ secrets.VAULT_TOKEN }} #в секрктах гитхаба находится токен, который получили после создания токена
+           secrets: |
+            secret/data//docker * | dockerhub_
+
+      - name: docker-hub-login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.dockerhub_username }}
+          password: ${{ env.dockerhub_password }}
      
        - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
          uses: docker/build-push-action@v5
@@ -84,22 +107,6 @@
            push: true
            tags: ungadult/api:latest
   ```
-
-### Настройка секретов
-В этих строчках мы ссылаемся на секреты DOCKER_USERNAME и DOCKER_PASSWORD, которые мы создали в настроках репозитория
-
- ```
-  username: ${{ secrets.DOCKER_USERNAME }} ##логин от аккаунта 
-  password: ${{ secrets.DOCKER_PASSWORD }} ##пароль от аккаунта
-  ```
-
-Секреты репозитория Setting/Secrets and variables/Actions:
-![png1](./images/1.png)
-
-
-Теперь запустим заново workflow. Получаем
-
-![png2](./images/2.png)
 
 ### Тест сборки
 Получаем собранный образ
@@ -160,7 +167,12 @@ public class WeatherForecastController : ControllerBase
 ![png7](./images/7.png)
 
 
+*У Vault есть возможность синхронизации секретов с GitHub Actions:
+![png7](./images/7.png)
+![png7](./images/7.png)
+
+
 ## Вывод
-В ходе выполнения лабораторной работы был настроен CI/CD: после пуша в папку API рабочего репозитория создавается новый docker-образ и сохраняется на dockerhub. Во время выполнения работы проблем не возникло.
+В ходе выполнения лабораторной работы был настроен CI/CD: после пуша в папку API рабочего репозитория создавается новый docker-образ,при этом секреты берутся из Vault, и сохраняется на dockerhub. Во время выполнения работы проблем не возникло.
 ## Выполнили
 Студенты группы К34211: Наумов М., Захаров Е. и Коркунов. Ф
