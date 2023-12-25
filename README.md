@@ -78,7 +78,7 @@
          with:
            url: http://127.0.0.1:8200
            tlsSkipVerify: true
-           token: ${{ secrets.VAULT_TOKEN }} #в секрктах гитхаба находится токен, который получили после создания токена
+           token: ${{ secrets.VAULT_TOKEN }} ## в секрктах гитхаба находится токен, который получили выше
            secrets: |
             secret/data//docker * | DOCKERHUB_
 
@@ -91,7 +91,7 @@
        - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
          uses: docker/build-push-action@v5
          with:
-           context: "./API/" ##Путь к папке с проектом для сборки
+           context: "./API/" ## Путь к папке с проектом для сборки
            push: true
            tags: ungadult/api:latest
   ```
