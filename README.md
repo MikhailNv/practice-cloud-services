@@ -12,37 +12,8 @@
 
 ### Создание репозитория с проектом
 
- В качестве рабочего проекта был загружен дефолтный проект Web-API на ASP.net Core, в котором реализован контроллер WeatherForecast (путь к файлу: ./API/Controllers/WeatherForecastController.cs), в котором реализован метод Get() (get-запрос к серверу). Сейчас он возвращает массив ранломных прогнозов (от 1 до 5):
- ```
-   [ApiController]
-   [Route("[controller]")]
-   public class WeatherForecastController : ControllerBase
-   {
-       private static readonly string[] Summaries = new[]
-       {
-       "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-       };
-  
-       private readonly ILogger<WeatherForecastController> _logger;
-  
-       public WeatherForecastController(ILogger<WeatherForecastController> logger)
-       {
-           _logger = logger;
-       }
-  
-       [HttpGet(Name = "GetWeatherForecast")]
-       public IEnumerable<WeatherForecast> Get()
-       {
-           return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-           {
-               Date = DateTime.Now.AddDays(index),
-               TemperatureC = Random.Shared.Next(-20, 55),
-               Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-           })
-           .ToArray();
-       }
-   }
-  ```
+ В качестве рабочего проекта был загружен дефолтный проект Web-API на ASP.net Core, в котором реализован контроллер WeatherForecast (путь к файлу: ./API/Controllers/WeatherForecastController.cs), в котором реализован метод Get() (get-запрос к серверу). Сейчас он возвращает массив ранломных прогнозов (от 1 до 5) - как и в ветке lab-3.
+ 
 ### Подключение своей машины к гиту
 Для этого были выполнены пару шагов по инструкции. В результате получилось добавить в раннеры свою машину:
 
@@ -71,6 +42,8 @@
 Затем были добалены секреты
 
 ```bin/vault kv put -mount=secret docker USERNAME=ungadult PASSWORD=<our_password>```
+
+В завершении предоставленный токен указали в секртах гитхаба под ключом VAULT_TOKEN, который будет использован далее.
 
 
 ### Настройка работы CI/CD в текущем репозитории
