@@ -54,6 +54,4 @@ minikube service prometheus-server
 
 ![jpg6](./images/6.jpg)
 
-![jpg7](./images/7.jpg)
-
 ### Вывод: был изучен и установлен AlertManager, c помощью которого мы смогли отпраить уведомление в телеграмм-канал. Проблем не возникло
