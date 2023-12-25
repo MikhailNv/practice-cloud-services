@@ -31,7 +31,7 @@ minikube service prometheus-server
 
 ![jpg2](./images/2.jpg)
 
-Далее создали файл alermmanger/values.yml, в который скопировали конфиг алер менеджера и добавили настройки телеграмма
+Далее создали файл alertmanger/values.yml, в который скопировали конфиг алер менеджера и добавили настройки телеграмма
 
 ![jpg3](./images/3.jpg)
 
