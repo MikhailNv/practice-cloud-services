@@ -45,18 +45,30 @@
   ```
 ### Подключение своей машины к гиту
 Для этого были выполнены пару шагов по инструкции. В результате получилось добавить в раннеры свою машину:
+
 ![jpg1](./images/1.jpg)
+
+На машине видим следующую картину:
+
 ![jpg2](./images/2.jpg)
 
 ### Запуск и настройка Vault
-Для этого он сначала был установлен
-![png3](./images/3.png)
+Сначала он был установлен (для этого был скачен Go версии 21.5).
 
-Затем был запушен и добалены секреты и токен для аутентификации
+После этого бы запущен сервер путем выполнения следущих команд:
+ ```export VAULT_ADDR='http://127.0.0.1:8200' ``` - указали вдрес сервера
+ 
+ ``` echo "<VAULT_TOKEN>" > unseal.key``` - указали сгенерированный токен (он заменен на <VAULT_TOKEN>)
+ 
+ ``` export VAULT_DEV_ROOT_TOKEN_ID=<VAULT_TOKEN>```
 
-```bin/vault kv put -mount=secret docker username=ungadult```
+После запускаем сервер:
 
-```bin/vault token create -period=30m ```
+![jpg3](./images/3.jpg)
+
+Затем были добалены секреты
+
+```bin/vault kv put -mount=secret docker USERNAME=ungadult PASSWORD=<our_password>```
 
 
 ### Настройка работы CI/CD в текущем репозитории
@@ -98,8 +110,8 @@
       - name: docker-hub-login
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKERHUB_username }}
-          password: ${{ env.DOCKERHUB_password }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
      
        - name: Docker pushing ##вход в учетную запись dockerhub, куда будет зугружен собранный образ на dockerhub
          uses: docker/build-push-action@v5
@@ -114,16 +126,14 @@
 После этого у нас запустился новый workflow:
 ![png5](./images/5.png)
 
-По заваршении новый образ загрузился к нам в репозиторий на dockerhub. Запустим новую версию API:
-![png6](./images/6.png)
+По заваршении новый образ загрузился к нам в репозиторий на dockerhub:
+![jpg6](./images/6.jpg)
 
-Повторим запрос. Как мы видим, теперь запрос возвращает не массив прогнозов погод, а лишь 1 прогноз погоды. Это говорит о том, что мы загрузили с dockerhub, обновленный образ, в котором загружена новая версия API, что и требовалось
-![png7](./images/7.png)
-
+Результат аналогичен резальтату в ветке lab-3, что и требовалось
 
 *У Vault есть возможность синхронизации секретов с GitHub Actions:
 ![png7](./images/7.png)
-![png7](./images/7.png)
+![png8](./images/8.png)
 
 
 ## Вывод
